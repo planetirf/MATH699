@@ -1,0 +1,198 @@
+---
+title: "hw2-Gapminder"
+author: "Irfan Ainuddin"
+date: "9/6/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("gapminder")
+library("tidyverse")
+
+
+```
+
+
+
+```{r}
+str(gapminder)
+```
+
+
+```{r}
+## tidyverse wrapping dataframes as tibbles?
+
+class(gapminder)
+
+##scope the head and tail of gapminder
+
+head(gapminder)
+tail(gapminder)
+
+
+## turn df into a tibble
+as_tibble(gapminder)
+
+## 545  example used iris instead of gapminder in as_tibble!
+
+##query basic info: nams, number of columns ncol(), length(), dim() ??? , number of rows nrow()
+
+names(gapminder)
+
+ncol(gapminder)
+
+length(gapminder)
+
+dim(gapminder)
+
+nrow(gapminder)
+
+```
+
+```{r}
+## statistical overview with summary()
+summary(gapminder)
+
+
+```
+
+```{r}
+
+##basic r plots
+plot(lifeExp ~ country, gapminder)
+
+```
+
+
+```{r}
+plot(lifeExp ~ gdpPercap, gapminder)
+
+
+
+```
+
+
+```{r}
+
+## Attempt to "linearize???" gdpPercap data by calling the log function on gdpPercap variable
+
+plot(lifeExp ~ log(gdpPercap), gapminder)
+```
+
+
+```{r}
+## the variable year integer values act as a factor (categeorical variable)
+summary(gapminder$year)
+
+table(gapminder$year)
+
+
+## country and continent are categorical variables
+class(gapminder$continent)
+
+summary(gapminder$continent)
+  
+levels(gapminder$continent)
+
+nlevels(gapminder$continent)
+```
+
+
+```{r}
+## count number of obersvations made with each continent and visualize the data
+
+table(gapminder$continent)
+
+barplot(table(gapminder$continent))
+
+
+## table(gapminder$continent) must be passed into bar plot? because the number of observations is counted by table() which barplot uses to build a "height" y-axis value for each continent.
+
+
+## barplot(gapminder$continent) throws an error : "Error in barplot.default(gapminder$continent) : 'height' must be a vector or a matrix"
+```
+
+
+```{r}
+## use ggplot2 installed in 'tidyverse' package
+
+p <- ggplot(filter(gapminder, continent != "Oceania"),
+            aes(x = gdpPercap, y = lifeExp))
+
+p + geom_point()
+
+
+## adjust to log scale for "linearilzation"
+
+p <- p + scale_x_log10()
+
+p + geom_point()
+
+
+## breakout continents by color with calling  the aes() method (a function within a function) within geom_point()
+
+p + geom_point(aes(color = continent))  
+
+## call other available methods within the geom_point() function to continue EDA, or define attribute variables within geom_point() such as alpha,
+
+p + geom_point(alpha = (1/3), size = 3, aes(color = continent)) + geom_smooth(lwd = 3, se = FALSE)
+
+## create individual plots for each continent
+
+p + geom_point(alpha = (1/3), size = 3, aes(color = continent)) + facet_wrap(~ continent) + geom_smooth(lwd = 1.5, se = FALSE)
+
+
+```
+
+```{r}
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

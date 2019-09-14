@@ -12,7 +12,7 @@ library("gapminder")
 library("tidyverse")
 ```
 
-## 1.1 - Loading and Looking
+## 1.1 Loading and Looking
 Load the Gapminder data .
 
 ```{r}
@@ -67,25 +67,67 @@ I would like to be able to investigate the variation of lifeExp and population b
 ## Call the summary() function on the year variable to see the range of years data is available
 
 summary(gapminder$year)
+table(gapminder$year)
 
 ```
 
-The years range from 1952 to 2007, 55 years total.
+The years range from 1952 to 2007, however, the table shows us there are only 12 years of that range which data was collected. In this case, while the variable is an int, it sort of acts as a factor (categorical variable).
+
+```{r}
+## Call the summary() function on the pop variable 
+
+summary(gapminder$pop)
+
+## Call the hist() function to view the population distributions
+hist(gapminder$pop)
+
+```
+
+The range in population is quite large from 6.001e+04 to 1.319e+09, considering sthe scale range of values suggests exponential changes in population. We may need to apply a logarithmic scale to visualize population data in a linear relationship with other variables. A quick look at the histogram shows the frequency of observations, since we know populations belong to each country
+
+```{r}
+## Call the summary() function on the lifeExp variable 
+
+summary(gapminder$lifeExp)
+
+## Call the hist() to view the life expectency distribution
+hist(gapminder$lifeExp)
+```
 
 ```{r}
 ## Call the table() function on the continent variable in the gapminder dataset to count the number of observations recorded for each continent.
 
 table(gapminder$continent)
 
+## Use a pie chart to show the distrubution of observations in africa
+
+conts <- table(gapminder$continent)
+
+pie(conts, labels =paste0(names(conts), ' ( ', round(prop.table(conts)*100), "%)"))
+
+## Use a barplot to do the same but better.
+
+barplot(conts, main="Frequency of Observations for each Continent")
+
 ```
 
 From the table we can see the number of observations for each country, Africa has the highest frequency (n = 624) and Oceania with the lowest frequencey (n = 24)
 
-Since the goal is to be able to work with complex data and break it down into component parts, I will focus on the continent of Africa.
+Since the goal is to be able to work with complex data and break it down into component parts, I will focus on the continent of Oceania because if I want to work with variations between countries it will be simpler to work with 24 countries instead of 624, but ideally the same analysis could be used for any of the continents within the  data set.
 
+
+## 1.4 Subset data and continue EDA
 ```{r}
+## Subset data for the coninent Oceania, using pipes %>% and the filter() function.
 
+df <- gapminder %>%
+  filter(continent == "Oceania")
 
+dfTest <- filter(gapminder, continent == "Oceania")
+
+summary(df$country)
+
+## ok so here we are saving a new dataframe however  ALL of the factor levels are saved into the new dataframe when ther are only 2 countries within Oceania. Its not necessarily that its missing (NA).  Why does table show all the factors for which there are no observations?
 ```
 
 ```{r}

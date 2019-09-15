@@ -175,6 +175,14 @@ When we color by continents we see that the outlier country is in Asia, so lets 
 asia <- gapminder %>%
   filter(continent == "Asia") 
 
+asia %>% group_by(country)
+
+head(asia)
+```
+
+Ok, so now we have asia, which has 396 observations, 12 observations for each country and we know the outlier data points are before 1982 so lets create a filter to find the country before 1982 with the highest GDPpercap.
+
+```{r}
 ## filter for years before 1982, and find the country with the highest GDPperCapipta and that should be our country of interest.
 
 target <- asia %>% 
@@ -209,7 +217,9 @@ str(kuwait)
 ```
 #### QUESTION:
 
-ok so here we are saving a new dataframe however  ALL of the factor levels are saved into the new dataframe when there are only 2 countries within Oceania. Its not necessarily that its missing data from a column.  Why does table show all the factors for which there are no observations?
+ok so here we are saving a new dataframe however  ALL of the factor levels are saved into the new dataframe when there are only 33 countries within Oceania. Its not necessarily that its missing data from a column.  Why does table show all the factors for which there are no observations?
+
+I was having a huge problem with this trying to subset asia and make nice looking tables with just the countries in asia.
 
 Stat545 has a discussion talks about tables, tibles, and dataframes here:
 https://stat545.com/block010_dplyr-end-single-table.html#group_by-is-a-mighty-weapon

@@ -506,7 +506,34 @@ p + geom_point() + geom_smooth(lwd = 1, se = FALSE, color = &quot;black&quot;) +
 asia &lt;- gapminder %&gt;%
   filter(continent == &quot;Asia&quot;) 
 
-## filter for years before 1982, and find the country with the highest GDPperCapipta and that should be our country of interest.
+asia %&gt;% group_by(country)</code></pre>
+<pre><code>## # A tibble: 396 x 6
+## # Groups:   country [33]
+##    country     continent  year lifeExp      pop gdpPercap
+##    &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1 Afghanistan Asia       1952    28.8  8425333      779.
+##  2 Afghanistan Asia       1957    30.3  9240934      821.
+##  3 Afghanistan Asia       1962    32.0 10267083      853.
+##  4 Afghanistan Asia       1967    34.0 11537966      836.
+##  5 Afghanistan Asia       1972    36.1 13079460      740.
+##  6 Afghanistan Asia       1977    38.4 14880372      786.
+##  7 Afghanistan Asia       1982    39.9 12881816      978.
+##  8 Afghanistan Asia       1987    40.8 13867957      852.
+##  9 Afghanistan Asia       1992    41.7 16317921      649.
+## 10 Afghanistan Asia       1997    41.8 22227415      635.
+## # … with 386 more rows</code></pre>
+<pre class="r"><code>head(asia)</code></pre>
+<pre><code>## # A tibble: 6 x 6
+##   country     continent  year lifeExp      pop gdpPercap
+##   &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+## 1 Afghanistan Asia       1952    28.8  8425333      779.
+## 2 Afghanistan Asia       1957    30.3  9240934      821.
+## 3 Afghanistan Asia       1962    32.0 10267083      853.
+## 4 Afghanistan Asia       1967    34.0 11537966      836.
+## 5 Afghanistan Asia       1972    36.1 13079460      740.
+## 6 Afghanistan Asia       1977    38.4 14880372      786.</code></pre>
+<p>Ok, so now we have asia, which has 396 observations, 12 observations for each country and we know the outlier data points are before 1982 so lets create a filter to find the country before 1982 with the highest GDPpercap.</p>
+<pre class="r"><code>## filter for years before 1982, and find the country with the highest GDPperCapipta and that should be our country of interest.
 
 target &lt;- asia %&gt;% 
   filter(year &lt; 1982) %&gt;%
@@ -532,7 +559,7 @@ arrange(target, desc(maxGDP))</code></pre>
 ##  9 Singapore            6  11210.           1
 ## 10 Hong Kong, China     6  11186.           1
 ## # … with 23 more rows</code></pre>
-<p>So our potential country of interest is Kuwait, which immediatly offers insight to the High GDP to life expectency relationship before 1982 and why it may have improved or “normalized” since then…….. you guess it, OIL!!!!!!!!!!!</p>
+<p>So our potential country of interest is Kuwait, which immediatly offers insight to the High GDP to life expectency relationship before 1982 and why it may have improved or “normalized” since then……..Any idea on what exactly makes this relationship in Kuwait so interesting?? My bet are on OIL.</p>
 <p>A small developing country with massive oil reserves and has experienced a lot of political change and upheavel.</p>
 <p>Lets take a closer look at Kuwait!</p>
 <pre class="r"><code>## create kuwait subset
@@ -554,7 +581,8 @@ str(kuwait)</code></pre>
 </div>
 <div id="question" class="section level4">
 <h4>QUESTION:</h4>
-<p>ok so here we are saving a new dataframe however ALL of the factor levels are saved into the new dataframe when there are only 2 countries within Oceania. Its not necessarily that its missing data from a column. Why does table show all the factors for which there are no observations?</p>
+<p>ok so here we are saving a new dataframe however ALL of the factor levels are saved into the new dataframe when there are only 33 countries within Oceania. Its not necessarily that its missing data from a column. Why does table show all the factors for which there are no observations?</p>
+<p>I was having a huge problem with this trying to subset asia and make nice looking tables with just the countries in asia.</p>
 <p>Stat545 has a discussion talks about tables, tibles, and dataframes here: <a href="https://stat545.com/block010_dplyr-end-single-table.html#group_by-is-a-mighty-weapon" class="uri">https://stat545.com/block010_dplyr-end-single-table.html#group_by-is-a-mighty-weapon</a></p>
 </div>
 <div id="moving-on-a-closer-look-at-kuwait" class="section level4">

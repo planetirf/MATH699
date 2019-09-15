@@ -113,94 +113,164 @@ barplot(conts, main="Frequency of Observations for each Continent")
 
 From the table we can see the number of observations for each country, Africa has the highest frequency (n = 624) and Oceania with the lowest frequencey (n = 24)
 
-Since the goal is to be able to work with complex data and break it down into component parts, I will focus on the continent of Oceania because if I want to work with variations between countries it will be simpler to work with 24 countries instead of 624, but ideally the same analysis could be used for any of the continents within the  data set.
+Since the goal is to be able to work with complex data and break it down into component parts, if I want to work with variations between countries it will be simpler to work with countries within a continent instead of all countries.
 
 
-## 1.4 Subset data and continue EDA
+## 1.4 Utilizing tidyverse for EDA
 ```{r}
-## Subset data for the coninent Oceania, using pipes %>% and the filter() function.
-
-df <- gapminder %>%
-  filter(continent == "Oceania")
-
-dfTest <- filter(gapminder, continent == "Oceania")
-
-summary(df$country)
-
-## ok so here we are saving a new dataframe however  ALL of the factor levels are saved into the new dataframe when ther are only 2 countries within Oceania. Its not necessarily that its missing (NA).  Why does table show all the factors for which there are no observations?
-```
-
-```{r}
-
-
+## Explore how many countries are represented in each continent, using pipes %>% and group_by(), n() and n_distinct()
+gapminder %>%
+  group_by(continent) %>%
+  summarise( n = n(),
+             n_countries = n_distinct(country))
 
 ```
 
+From the table produced we can see the number of observations (n) and the number of unique countries (n_countries) for each continent with a high of 52 in Africa and a low of 2 in Oceania. 
+
+#### What is the relationship between life expectancy and gdp over time?
+```{r}
+p <- ggplot(gapminder, aes(x=gdpPercap, y=lifeExp, color = year)) # initialize ggplot with data
+p <- p + scale_x_log10() # add log scale to x axis for gdpPercap
+p + geom_point()
+
+```
+Based on the color distributions it seems that life exptency is increasing over time.
+Looks like a positive linear relationship between gdpPercap and lifeExp, lets add a trend line.
 
 ```{r}
+p + geom_point() + geom_smooth(lwd = 1.5, se = FALSE, color = "red")
 
 ```
 
+Hmm... there seems to be a drop off at the high gdpPercap range due to some covariation with years in 1960? lets try disentangling the data with facet-wraapping by year.
 
 ```{r}
-
-
+p + geom_point() + geom_smooth(lwd = 1.5, se = FALSE, color = "red") + facet_wrap(~ year)
 ```
 
 
-```{r}
+#### An outlier of interest has been spotted!!!!
+
+It seems as though the positive relationship between lifeExp and gdp improved over time. The improvement in the relationships seems to be due to a consistent outlier point. That specific country could be interesting.
+
+It is a country with the highest GDP but has an average life expectancy... at some point between 1977 and 1982 that changes..Maybe there was a large shift in policy or government? 
 
 
-```
-
-```{r}
-
-```
-
-
-```{r}
-
-
-```
+Lets recreate the same graph but this time we will color by continents with 1 explicit code chunk.
 
 
 ```{r}
-
+p <- ggplot(gapminder, aes(x=gdpPercap, y=lifeExp, color = continent)) # initialize ggplot with data
+p <- p + scale_x_log10() # add log scale to x axis for gdpPercap
+p + geom_point() + geom_smooth(lwd = 1, se = FALSE, color = "black") + facet_wrap(~ year)
 
 ```
 
+When we color by continents we see that the outlier country is in Asia, so lets subset our data and see if we can isolate that country.
 
 ```{r}
 
+## create subset of the continent asia
+asia <- gapminder %>%
+  filter(continent == "Asia") 
+
+## filter for years before 1982, and find the country with the highest GDPperCapipta and that should be our country of interest.
+
+target <- asia %>% 
+  filter(year < 1982) %>%
+  group_by(country) %>%
+  summarise(n = n(),
+            maxGDP = max(gdpPercap),
+             n_countries = n_distinct(country))
+
+
+## arrange() by desc() should bring our target country to the top.
+arrange(target, desc(maxGDP))
+```
+So our potential country of interest is Kuwait, which immediatly offers insight to the High GDP to life expectency relationship before 1982 and why it may have improved or "normalized" since then........Any idea on what exactly makes this relationship in Kuwait so interesting?? My bet are on OIL.
+
+A small developing country with massive oil reserves and has experienced a lot of political change and upheavel.
+
+Lets take a closer look at Kuwait!
+
+```{r}
+## create kuwait subset
+
+kuwait <- gapminder %>%
+  filter(country == "Kuwait") 
+
+## inspect kuwait 
+
+str(kuwait)
+
+## Why do all factor levels get saved into the new DF object? Do tibbles fix this?
 
 ```
+#### QUESTION:
+
+ok so here we are saving a new dataframe however  ALL of the factor levels are saved into the new dataframe when there are only 2 countries within Oceania. Its not necessarily that its missing data from a column.  Why does table show all the factors for which there are no observations?
+
+Stat545 has a discussion talks about tables, tibles, and dataframes here:
+https://stat545.com/block010_dplyr-end-single-table.html#group_by-is-a-mighty-weapon
+
+
+#### Moving on... A closer look at Kuwait
+
+
+Lets inspect the trends in GDP per capita from the 1950s to the 2000s.
 
 
 ```{r}
+## Check out GDP over time
 
-
+k <- ggplot(kuwait, aes(x=year, y=gdpPercap))
+k <- k + scale_y_log10() # add log scale to y axis for gdpPercap
+k + geom_point() + ggtitle("GDP Per Capita") +geom_smooth()
 ```
 
+GDP per captia seems to drop drastically during the 1970s to a low  in the Late 80's around the time of the Gulf War.
+
+Lets take a look at Kuwait's change in population over the same time frame.
 
 ```{r}
 
+## Check out population over time
+
+k1 <- ggplot(kuwait, aes(x=year, y=pop))
+k1 + geom_point() + ggtitle("Population") +geom_smooth(se = FALSE)
+
 ```
+It Looks like Kuwait's population is growing substantially.
 
-
+Lets take a look at the life expectancy of Kuwait's growing population.
 ```{r}
 
+## Check out life expectancy over time
+
+k2 <- ggplot(kuwait, aes(x=year, y=lifeExp))
+k2 + geom_point() + ggtitle("Life Expectancy") +geom_smooth(se = FALSE)
+
 ```
 
+It looks like Kuwaits population is living longer and longer but starting to level off a bit around 80 years old.
 
+So, the story is that Kuwait's population is growing and living longer while the GDP per capita is shrinking suggests even though more people exist in the country and are living longer, they may not necessarily be contributing very much to the countries overall GDP. 
+Knowing that Kuwait is an oil producing nation and apart of OPEC we can start to form a questions and hypotheses investigate just how much of an influence the population has on kuwaits GDP per Capita through statistical analysis.
+
+
+Lets get back to the first bi-variate relationship we explored for all the countries in this data set,which started us down this rabbit hole, the relationship between GDP per capita and life expectency specifically for Kuwait.
 ```{r}
 
+k3 <- ggplot(kuwait, aes(x=gdpPercap, y=lifeExp, color = year))
+k3 <- k3 + scale_x_log10() # add log scale to x axis for gdpPercap
+k3 + geom_point() + ggtitle("The Relationship between GDP per Capita and Life Expectency in Kuwait") + geom_smooth(se = FALSE)
+
 ```
-## Including Plots
+We see the same cluster of dark blue data points that peaked our interest from our original visualization of the variables lifeExp and gdpPercap for the entire gapminder dataset in an isolated state.
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+## 1.5 EDA Success!!
+We have successfully drilled down through the gapminder dataset using methods of exploratory data analysis driven by visualizations to explore areas of interest within the dataset and formulate new questions and hypothesis.
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+

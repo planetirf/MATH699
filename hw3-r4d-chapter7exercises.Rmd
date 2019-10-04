@@ -267,8 +267,7 @@ str(flights)
 ## What variable in the diamonds dataset is most important for predicting the price of a diamond? How is that variable correlated with cut? Why does the combination of those two relationships lead to lower quality diamonds being more expensive?
 
 
-ggplot(data = diamonds2) +
-  geom_boxplot(mapping = aes(x = reorder(clarity, color, FUN = carat), y = price))
+ggplot(data = diamonds2)
 ```
 
 ```{r 7.5.1.1.3}
@@ -281,6 +280,8 @@ ggplot(data = diamonds2) +
 ```{r 7.5.1.1.4}
 
 ## One problem with boxplots is that they were developed in an era of much smaller datasets and tend to display a prohibitively large number of “outlying values”. One approach to remedy this problem is the letter value plot. Install the lvplot package, and try using geom_lv() to display the distribution of price vs cut. What do you learn? How do you interpret the plots?
+
+
 ```
 
 
